@@ -1,11 +1,12 @@
-displayName: Demo Plugin
+displayName: hello plugin
 type: middleware
 
-import: github.com/traefik/plugindemo
+import: github.com/worldline-go/traefik-plugin-hello
 
-summary: '[Demo] Add Request Header'
+summary: '[hello] A message returner.'
 
 testData:
-  Headers:
-    X-Demo: test
-    X-URL: '{{URL}}'
+  message: "I will ask you to write another 10 points there."
+  statusCode: 200
+  headers:
+    Content-Type: "text/plain"

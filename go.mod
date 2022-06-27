@@ -1,3 +1,3 @@
-module github.com/traefik/plugindemo
+module github.com/worldline-go/traefik-plugin-hello
 
-go 1.16
+go 1.17
