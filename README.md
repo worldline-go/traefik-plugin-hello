@@ -2,6 +2,8 @@
 
 This plugin return message, status code and headers with configuration and request query parameters.
 
+Set default contents in configuration also override with request query parameters.
+
 ```sh
 curl -i "http://localhost:8080/test?headers=Content-Type:application/json,X-Test:true&statusCode=202&message=Gunaydin"
 ```

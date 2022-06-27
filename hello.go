@@ -1,15 +1,12 @@
+// Package traefik_plugin_hello return message, status code and headers with configuration and request query parameters.
 package traefik_plugin_hello
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"net/http"
 	"strconv"
 	"strings"
 )
-
-var defaultMsg = "Hello world!"
 
 // Config the plugin configuration.
 type Config struct {
@@ -21,7 +18,7 @@ type Config struct {
 // CreateConfig creates the default plugin configuration.
 func CreateConfig() *Config {
 	return &Config{
-		Message:    defaultMsg,
+		Message:    "Hello world!",
 		StatusCode: 200,
 		Headers:    make(map[string]string),
 	}
@@ -48,54 +45,12 @@ func New(ctx context.Context, next http.Handler, config *Config, name string) (h
 	}, nil
 }
 
-func prepareOutput(req *http.Request, msg string) []byte {
-	result := make(map[string]interface{})
-
-	result["msg"] = msg
-	result["header"] = req.Header
-	result["URL"] = req.URL.String()
-
-	body := ""
-
-	if req.Body != nil {
-		defer req.Body.Close()
-
-		buf := bytes.Buffer{}
-		buf.ReadFrom(req.Body) //nolint:errcheck
-		body = buf.String()
-	}
-
-	result["body"] = body
-	result["form"] = req.Form.Encode()
-
-	result["host"] = req.Host
-	result["remoteAddr"] = req.RemoteAddr
-	result["requestURI"] = req.RequestURI
-	result["TLS"] = req.TLS
-	result["trailer"] = req.Trailer
-	result["transferEncoding"] = req.TransferEncoding
-
-	bf := bytes.NewBufferString("")
-	jsonEncoder := json.NewEncoder(bf)
-	jsonEncoder.SetEscapeHTML(false)
-	jsonEncoder.Encode(result) //nolint:errcheck
-
-	return bf.Bytes()
-}
-
+//nolint:varnamelen
 func (e *hello) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	message := []byte(e.message)
 
 	if outputQuery := req.URL.Query().Get("message"); outputQuery != "" {
 		message = []byte(outputQuery)
-	}
-
-	details, _ := strconv.ParseBool(req.URL.Query().Get("details"))
-
-	if details {
-		message = prepareOutput(req, string(message))
-
-		rw.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	}
 
 	for k, v := range e.headers {
@@ -120,5 +75,5 @@ func (e *hello) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 		rw.WriteHeader(statusCode)
 	}
 
-	rw.Write(message) //nolint:errcheck
+	rw.Write(message) //nolint:gosec,errcheck
 }

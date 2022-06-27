@@ -2,23 +2,22 @@ package traefik_plugin_hello_test
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
 	"testing"
 
-	hello "github.com/worldline-go/traefik-plugin-hello"
+	traefik_plugin_hello "github.com/worldline-go/traefik-plugin-hello"
 )
 
 func TestHello(t *testing.T) {
-	cfg := hello.CreateConfig()
+	cfg := traefik_plugin_hello.CreateConfig()
 	cfg.Headers["Content-type"] = "application/json"
 
 	ctx := context.Background()
 	next := http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {})
 
-	handler, err := hello.New(ctx, next, cfg, "hello-plugin")
+	handler, err := traefik_plugin_hello.New(ctx, next, cfg, "hello-plugin")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -31,8 +30,6 @@ func TestHello(t *testing.T) {
 	}
 
 	handler.ServeHTTP(recorder, req)
-
-	fmt.Println(recorder.Header())
 
 	assertHeader(t, recorder, "Content-Type", []string{"application/json"})
 	if recorder.Code != 200 {
